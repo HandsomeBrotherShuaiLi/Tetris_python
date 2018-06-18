@@ -13,7 +13,7 @@ from kivy.properties import ObjectProperty, NumericProperty
 from kivy.uix.screenmanager import ScreenManager, Screen
 from function import *
 from kivy.core.image import Image
-
+from kivy.factory import Factory
 class TetrivyApp(App):
     game = ObjectProperty(None)
 
@@ -21,18 +21,58 @@ class TetrivyApp(App):
         return MyForm()
 
 
-    def on_pause(self):
-        return  True
-    def on_resume(self):
-        pass
+
 class MyForm(BoxLayout):
     picturebox=ObjectProperty(None)
     buttong=ObjectProperty(None)
+    music_volume = NumericProperty(1)
+
+    def __init__(self, **kwargs):
+        super(MyForm, self).__init__(**kwargs)
+
+        self.music = SoundLoader.load("bgm.ogg")
+        self.music.play()
+
 
     def turn_page(self):
         self.clear_widgets()
+
         turn_widget=GameScreen()
+        self.music.stop()
         self.add_widget(turn_widget)
+
+    def go_about(self):
+        self.clear_widgets()
+        turn_widget = AboutScreen()
+        self.music.stop()
+        self.add_widget(turn_widget)
+    def go_help(self):
+        self.clear_widgets()
+        turn_widget = HelpScreen()
+        self.music.stop()
+        self.add_widget(turn_widget)
+
+
+
+class HelpScreen(Screen):
+
+    def turn_back(self):
+        self.clear_widgets()
+        turn_widget = MyForm()
+
+        self.add_widget(turn_widget)
+
+
+class AboutScreen(Screen):
+    picturebox = ObjectProperty(None)
+    buttong = ObjectProperty(None)
+    def turn_back(self):
+        self.clear_widgets()
+        turn_widget = MyForm()
+
+
+        self.add_widget(turn_widget)
+
 
 
 
@@ -42,10 +82,13 @@ class MyForm(BoxLayout):
 
 class GameScreen(BoxLayout):
     board = ObjectProperty(None)
+
     sidebar = ObjectProperty(None)
+
     music_volume = NumericProperty(1)
     sound_volume = NumericProperty(1)
     countmusic=0
+    count=0
 
     def __init__(self, **kwargs):
         super(GameScreen, self).__init__(**kwargs)
@@ -56,16 +99,13 @@ class GameScreen(BoxLayout):
         self.bind(size=self.redraw)
         self.music=SoundLoader.load("Two Steps From Hell - Victory.ogg")
 
+
     def start_game(self, *args):
         Clock.unschedule(self.tick)
         self.game_state.reset()
         self.game_state.start()
         self.tick()
-    def restart_game(self,*args):
-        Clock.unschedule(self.tick)
-        self.game_state.reset()
-        self.game_state.start()
-        self.tick()
+
     def start_music(self,*args):
         if self.music and self.countmusic%2==0:
             self.countmusic+=1
@@ -79,6 +119,7 @@ class GameScreen(BoxLayout):
     def backhome(self,*args):
         self.clear_widgets()
         turn_widget = MyForm()
+        self.music.stop()
         self.add_widget(turn_widget)
 
 
@@ -99,6 +140,8 @@ class GameScreen(BoxLayout):
         self.board.redraw()
 
     def calculate_board_size(self):
+
+
         height = self.board.height - 20
         width = height / 2
         if width > self.board.width:
@@ -109,13 +152,21 @@ class GameScreen(BoxLayout):
 
         x = (self.board.width - width) / 2
         y = (self.board.height - height) / 2
-        return x, y, width, height
+        self.count += 1
+        # print(self.count)
+        # print(x,y,width,height)
+        if self.count>=6:
+            return 127.5,10.0,270.0,540.0
+        else:
+            return x, y, width, height
 
     def block_size(self):
         board_x, board_y, board_width, board_height = \
             self.calculate_board_size()
         block_width = board_width / GRID_WIDTH - 1
         block_height = board_height / (GRID_HEIGHT - 2) - 1
+        # print(self.count,"blocksize")
+        # print(block_width, block_height)
         return block_width, block_height
 
 
@@ -145,6 +196,8 @@ class Board(Widget):
     def redraw(self, *args):
         self.canvas.before.clear()
         self.canvas.clear()
+        if not self.parent:
+            return
         board_x, board_y, board_width, board_height = self.parent.calculate_board_size()
         block_width, block_height = self.parent.block_size()
 
@@ -193,7 +246,6 @@ class Sidebar(BoxLayout):
     level = ObjectProperty(None)
     lines_cleared = ObjectProperty(None)
     next_piece = ObjectProperty(None)
-    start_button = ObjectProperty(None)
 
     def __init__(self, **kwargs):
         super(Sidebar, self).__init__(**kwargs)
@@ -209,16 +261,18 @@ class Sidebar(BoxLayout):
         self.level.text = str(self.game_state.level)
         self.lines_cleared.text = str(self.game_state.lines_cleared)
         self.render_next_piece()
-        if self.game_state.status == GameStatus.ACTIVE:
-            self.start_button.disabled = True
-        else:
-            self.start_button.disabled = False
+        # if self.game_state.status == GameStatus.ACTIVE:
+        #     self.start_button.disabled = True
+        # else:
+        #     self.start_button.disabled = False
 
     def render_next_piece(self):
         next_piece = self.next_piece
         next_piece.canvas.before.clear()
         next_piece.canvas.clear()
         if not self.game_state or self.game_state.status != GameStatus.ACTIVE:
+            return
+        if self.parent==None:
             return
         block_width, block_height = self.parent.block_size()
 

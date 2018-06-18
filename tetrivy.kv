@@ -1,9 +1,8 @@
 #:kivy 1.9.1
-MyForm:
+
 <MyForm>
 
-    orientation: 'horizontal'
-
+    orientation: 'vertical'
     padding: 10
     spacing: 10
     canvas.before:
@@ -14,14 +13,135 @@ MyForm:
             size: self.size
 
 
-    Button:
-        id:button1
-        text:"help"
+
+    Label:
+        text:"Tetris"
+        font_size:100
+        pos:500,500
+    Label:
+        text:"Designed by Lishuai & Zhaojiayue"
+        font_size:20
+
 
     Button:
-        id:button2
         text:"New Game"
+        size_hint: None, None
+
+        color:.8,1,0,1
+        background_color: (0, .5, 1.5, 1)
+
+        size:120,50
+        pos_hint: { 'center_x' : .5}
+
         on_press:root.turn_page()
+
+
+
+    Button:
+        text:"Help"
+        size_hint: None, None
+
+        color:.8,1,0,1
+        background_color: (0, .5, 1.5, 1)
+        pos_hint: { 'center_x' : .5}
+
+        size:120,50
+        on_press:root.go_help()
+
+    Button:
+        text:"About"
+        size_hint: None, None
+
+        color:.8,1,0,1
+        background_color: (0, .5, 1.5, 1)
+        pos_hint: { 'center_x' : .5}
+
+        size:120,50
+
+        on_press:root.go_about()
+    Label:
+        font_size:20
+
+
+
+
+<AboutScreen>:
+
+    canvas.before:
+        Color:
+            rgba: 0.2, 0.2, 0.2, 1
+        Rectangle:
+            pos:self.pos
+            size:self.size
+    Label:
+
+        text:
+            """
+            Thanks for playing my game, hope you would enjoy it!
+            @2018-2025 lishuai. All Rights Reserved.
+            """
+    Button:
+        text:"Back"
+        size_hint: None, None
+
+        color:.8,1,0,1
+        background_color: (0, .5, 1.5, 1)
+
+        size:120,50
+        pos_hint: { 'center_x' : .5}
+        on_press:root.turn_back()
+
+
+<HelpScreen>:
+
+
+    canvas.before:
+
+        Rectangle:
+            pos:self.pos
+            size:self.size
+    Image:
+        source:"fff.png"
+        size_hint:0.8,0.6
+        pos_hint:{'center_x':0.5,'center_y':0.7}
+
+    Label:
+        pos_hint:{'center_x':0.5,'center_y':0.25}
+        text:
+            """
+
+
+
+
+
+            Operations:
+            (1) If you don't do anything, the item will go down straight
+            (2) If you touch the left side once,the item will move one step towards the left
+            (3) If you touch the right side once,the item will move one step towards the right
+            (4) If you touch the board(the middle) once,the item will rotate and change its shape
+
+
+            Buttons:
+            (5) Start Button -------- start the game or restart the game.
+            (6) Music Button -------- Music on-off
+            (7) Back  Button -------- Return to the menu
+            """
+    Button:
+        text:"Back"
+        size_hint: None, None
+
+        color:.8,1,0,1
+        background_color: (0, .5, 1.5, 1)
+
+        size:120,50
+        pos_hint: { 'center_x' : .5}
+        on_press:root.turn_back()
+
+
+
+
+
+
 
 
 
@@ -61,6 +181,7 @@ MyForm:
 
 
 <GameScreen>
+    refresh: refresh.__self__
     board: board_id
     sidebar: sidebar_id
     orientation: 'horizontal'
@@ -83,9 +204,9 @@ MyForm:
         level: level_id
         lines_cleared: lines_cleared_id
         next_piece: next_piece_id
-        start_button: start_button_id
-        restart_button: restart_button_id
+
         size_hint_x: 0.3
+
         orientation: 'vertical'
 
         Label:
@@ -128,29 +249,23 @@ MyForm:
             size_hint_y: 3
 
         Button:
-            id: start_button_id
+            id: refresh
             background_color: (0, .5, 1.5, 1)
             on_press: root.start_game()
             text: 'Start'
-            size_hint_y: 1
-        Button:
-            id: restart_button_id
-            background_color: (0, .5, 1.5, 1)
-            on_press: root.restart_game()
-            text: 'Restart'
-            size_hint_y: 1
+            size:120,50
+
         Button:
             id: music_button_id
             background_color: (0, .5, 1.5, 1)
             on_press: root.start_music()
             text: 'Music'
-            size_hint_y: 1
+            size:120,50
         Button:
             id: music_button_id
             background_color: (0, .5, 1.5, 1)
             on_press: root.backhome()
             text: 'Back'
-            size_hint_y: 1
-
+            size:120,50
 
 
