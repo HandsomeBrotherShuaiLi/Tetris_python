@@ -7,10 +7,3 @@ There are some screenshots for the demo.
 ![demo2](S:\pycharm\Tetris_python\data\2.png)
 ![demo3](S:\pycharm\Tetris_python\data\3.png)
 ![demo4](S:\pycharm\Tetris_python\data\4.png)
-<iframe 
-    width="800" 
-    height="450" 
-    src="S:\pycharm\Tetris_python\data\video.mp4"
-    frameborder="0" 
-    allowfullscreen>
-</iframe>
